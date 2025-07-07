@@ -1,7 +1,7 @@
-package com.example.backend.test.Controller;
+package com.backend.test.Controller;
 
-import com.example.backend.test.Repository.InspectionRepository;
-import com.example.backend.test.Service.Inspection;
+import com.backend.test.Repository.InspectionRepository;
+import com.backend.test.Service.Inspection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
