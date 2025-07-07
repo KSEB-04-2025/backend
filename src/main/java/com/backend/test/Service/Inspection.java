@@ -1,4 +1,4 @@
-package com.example.backend.test.Service;
+package com.backend.test.Service;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
