@@ -14,16 +14,24 @@ services:
       - mongo-data:/data/db
 
   spring-app:
-    container_name: spring-app-local
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: spring-app-local
     ports:
       - "8080:8080"
     depends_on:
       - mongo
+    env_file:
+      - .env
     environment:
       SPRING_PROFILES_ACTIVE: local
+    networks:
+      - app-network
 
 volumes:
   mongo-data:
+
+networks:
+  app-network:
+    driver: bridge
