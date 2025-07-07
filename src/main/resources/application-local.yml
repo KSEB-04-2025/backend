@@ -8,6 +8,8 @@ spring:
       authentication-database: admin
       database: ${MONGO_DB_NAME}
 
+  servlet:
+    context-path: /api
 
 server:
   port: 8080
