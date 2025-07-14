@@ -23,6 +23,11 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
+      - name: Create application.yml from secret
+        run: |
+          mkdir -p src/main/resources
+          echo "${{ secrets.APPLICATION_YML }}" > src/main/resources/application.yml
+
       - name: Build with Gradle
         run: ./gradlew clean build
 
@@ -41,16 +46,6 @@ jobs:
 
       - name: Create .env file from secret
         run: printf '%s' "${{ secrets.ENV_FILE }}" > .env
-
-      # 파일들이 존재하는지 확인
-      - name: Verify files exist
-        run: |
-          echo "Checking files in current directory:"
-          ls -la
-          echo "Checking if docker-compose.yml exists:"
-          test -f docker-compose.yml && echo "docker-compose.yml exists" || echo "docker-compose.yml missing"
-          echo "Checking if .env exists:"
-          test -f .env && echo ".env exists" || echo ".env missing"
 
       - name: Copy docker-compose.yml and .env to server
         uses: appleboy/scp-action@master
