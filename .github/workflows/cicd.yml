@@ -40,7 +40,7 @@ jobs:
           tags: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGENAME }}:latest
 
       - name: Create .env file from secret
-        run: echo "${{ secrets.ENV_FILE }}" > .env
+        run: printf '%s' "${{ secrets.ENV_FILE }}" > .env
 
       - name: Copy docker-compose.yml and .env to server
         uses: appleboy/scp-action@master
@@ -65,4 +65,4 @@ jobs:
             docker-compose --env-file .env down
             docker-compose --env-file .env up -d --force-recreate --remove-orphans
             docker image prune -f
-            rm -f ./docker-compose.yml ./.env
+            rm -f /home/zezeonekesb/backend/docker-compose.yml /home/zezeonekesb/backend/.env
