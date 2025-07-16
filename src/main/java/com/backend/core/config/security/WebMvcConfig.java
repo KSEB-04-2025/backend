@@ -10,7 +10,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new SessionCheckInterceptor())
-                .addPathPatterns("/api/admin/**")      // 예: /api/admin/ 이하만 보호
-                .excludePathPatterns("/api/login"); // 로그인은 제외
+                .addPathPatterns("/api/admin/**")
+                .excludePathPatterns("/api/login");
     }
 }
+
+

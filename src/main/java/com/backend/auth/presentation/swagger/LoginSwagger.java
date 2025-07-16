@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@Tag(name = "로그인", description = "로그인/로그아웃 세션 기반 인증 API")
+@Tag(name = "로그인/로그아웃", description = "로그인/로그아웃 세션 기반 인증 API")
 public interface LoginSwagger {
 
     @Operation(
@@ -19,11 +19,4 @@ public interface LoginSwagger {
             jakarta.servlet.http.HttpSession session
     );
 
-    @Operation(
-            summary = "로그아웃",
-            description = "세션을 만료(삭제)해서 로그아웃 처리합니다."
-    )
-    ResponseEntity<LoginResponse> logout(
-            jakarta.servlet.http.HttpSession session
-    );
 }
