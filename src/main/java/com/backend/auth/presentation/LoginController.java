@@ -8,7 +8,14 @@ import com.backend.auth.presentation.swagger.LoginSwagger;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/login")
@@ -27,15 +34,20 @@ public class LoginController implements LoginSwagger {
         if (success) {
             session.setAttribute("isAdmin", true);
             session.setAttribute("loginId", request.getUsername());
+
+            Authentication auth = new UsernamePasswordAuthenticationToken(
+                    request.getUsername(),
+                    null,
+                    List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))
+            );
+            SecurityContextHolder.getContext().setAuthentication(auth);
+
+            session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                    SecurityContextHolder.getContext());
+
+
             return ResponseEntity.ok(new LoginResponse("로그인 성공"));
         }
         return ResponseEntity.status(401).body(new LoginResponse("로그인 실패"));
-    }
-
-    @Override
-    @PostMapping("/logout")
-    public ResponseEntity<LoginResponse> logout(HttpSession session) {
-        session.invalidate();
-        return ResponseEntity.ok(new LoginResponse("로그아웃 성공"));
     }
 }
