@@ -1,0 +1,30 @@
+package com.backend.core.config.security;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+@Configuration
+@RequiredArgsConstructor
+public class CustomCorsConfiguration {
+
+    private final CorsProperties corsProperties;
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOriginPatterns(corsProperties.getOrigins());
+        config.setAllowedMethods(corsProperties.getMethods());
+        config.setAllowedHeaders(corsProperties.getHeaders());
+        config.setExposedHeaders(corsProperties.getExposedHeaders());
+        config.setAllowCredentials(corsProperties.getCredentials());
+        config.setMaxAge(corsProperties.getMaxAge());
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration(corsProperties.getPaths(), config);
+        return source;
+    }
+}
