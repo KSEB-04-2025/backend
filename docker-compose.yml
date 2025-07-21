@@ -24,7 +24,6 @@ services:
     depends_on:
       - mongo
     environment:
-      SPRING_PROFILES_ACTIVE: default
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
       MONGO_DB_NAME: ${MONGO_DB_NAME}
