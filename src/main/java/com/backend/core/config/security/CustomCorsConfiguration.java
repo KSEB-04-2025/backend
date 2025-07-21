@@ -24,7 +24,9 @@ public class CustomCorsConfiguration {
         config.setMaxAge(corsProperties.getMaxAge());
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration(corsProperties.getPaths(), config);
+        for (String path : corsProperties.getPaths()) {
+            source.registerCorsConfiguration(path, config);
+        }
         return source;
     }
 }

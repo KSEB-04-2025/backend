@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @RequiredArgsConstructor
 public class CorsProperties {
-    private final String paths;
+    private final List<String> paths;
     private final List<String> origins;
     private final List<String> methods;
     private final List<String> headers;
