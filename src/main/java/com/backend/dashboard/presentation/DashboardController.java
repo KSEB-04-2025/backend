@@ -2,6 +2,7 @@ package com.backend.dashboard.presentation;
 
 import com.backend.dashboard.application.DashboardService;
 import com.backend.dashboard.presentation.dto.DashboardSummaryResponse;
+import com.backend.dashboard.presentation.dto.DefectRateResponse;
 import com.backend.dashboard.presentation.dto.QualityTrendResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,4 +27,10 @@ public class DashboardController {
     public List<QualityTrendResponse> getQualityTrends() {
         return dashboardService.getQualityTrends();
     }
+
+    @GetMapping("/defect-rate")
+    public List<DefectRateResponse> getDefectRates() {
+        return dashboardService.getDefectRates();
+    }
+
 }
