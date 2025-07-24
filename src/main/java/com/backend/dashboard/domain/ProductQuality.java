@@ -1,0 +1,41 @@
+package com.backend.dashboard.domain;
+
+import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+
+import java.time.LocalDateTime;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Document(collection = "results")
+public class ProductQuality {
+    @Id
+    private String id;
+
+    private String label;
+
+    @Field("max_cluster")
+    private int maxCluster;
+
+    private double uniformity;
+
+    @Field("n_spots")
+    private int nSpots;
+
+    @Field("min_nn_dist")
+    private double minNnDist;
+
+    @Field("nn_cv")
+    private double nnCv;
+
+    @Field("n_clusters")
+    private int nClusters;
+
+    @Field("uploadDate")
+    private LocalDateTime uploadDate;    // 판별 일시
+}
