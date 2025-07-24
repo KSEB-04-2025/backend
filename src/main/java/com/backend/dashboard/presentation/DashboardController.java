@@ -1,36 +1,32 @@
 package com.backend.dashboard.presentation;
 
 import com.backend.dashboard.application.DashboardService;
-import com.backend.dashboard.presentation.dto.DashboardSummaryResponse;
-import com.backend.dashboard.presentation.dto.DefectRateResponse;
-import com.backend.dashboard.presentation.dto.QualityTrendResponse;
+import com.backend.dashboard.presentation.dto.*;
+import com.backend.dashboard.presentation.swagger.DashboardSwagger;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/admin/dashboard")
 @RequiredArgsConstructor
-public class DashboardController {
+public class DashboardController implements DashboardSwagger {
 
     private final DashboardService dashboardService;
 
-    @GetMapping("/summary")
-    public DashboardSummaryResponse getSummary() {
-        return dashboardService.getSummary();
+    @Override
+    public ResponseEntity<DashboardSummaryResponse> getSummary() {
+        return ResponseEntity.ok(dashboardService.getSummary());
     }
 
-    @GetMapping("/trend")
-    public List<QualityTrendResponse> getQualityTrends() {
-        return dashboardService.getQualityTrends();
+    @Override
+    public ResponseEntity<List<QualityTrendResponse>> getQualityTrends() {
+        return ResponseEntity.ok(dashboardService.getQualityTrends());
     }
 
-    @GetMapping("/defect-rate")
-    public List<DefectRateResponse> getDefectRates() {
-        return dashboardService.getDefectRates();
+    @Override
+    public ResponseEntity<List<DefectRateResponse>> getDefectRates() {
+        return ResponseEntity.ok(dashboardService.getDefectRates());
     }
-
 }

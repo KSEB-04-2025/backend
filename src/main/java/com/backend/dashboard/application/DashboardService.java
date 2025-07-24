@@ -2,6 +2,7 @@ package com.backend.dashboard.application;
 
 import com.backend.dashboard.domain.ProductQuality;
 import com.backend.dashboard.domain.ProductQualityRepository;
+import com.backend.dashboard.exception.DashboardException;
 import com.backend.dashboard.presentation.dto.DashboardSummaryResponse;
 import com.backend.dashboard.presentation.dto.DefectRateResponse;
 import com.backend.dashboard.presentation.dto.QualityTrendResponse;
@@ -13,6 +14,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
+
+// ...생략
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +44,10 @@ public class DashboardService {
         long total = productQualityRepository.count();
         long aCount = productQualityRepository.countByLabel("A");
         long bCount = productQualityRepository.countByLabel("B");
+
+        if (total == 0) {
+            throw new DashboardException("생산 데이터가 존재하지 않습니다.");
+        }
         return new DashboardSummaryResponse(total, aCount, bCount);
     }
 
@@ -48,6 +55,10 @@ public class DashboardService {
     public List<QualityTrendResponse> getQualityTrends() {
         List<ProductQuality> list = getLastWeekData();
         LocalDate todaySeoul = LocalDate.now(SEOUL_ZONE);
+
+        if (list.isEmpty()) {
+            throw new DashboardException("최근 7일간 품질 데이터가 존재하지 않습니다.");
+        }
 
         Map<String, long[]> map = new TreeMap<>();
         for (ProductQuality pq : list) {
@@ -71,6 +82,10 @@ public class DashboardService {
     public List<DefectRateResponse> getDefectRates() {
         List<ProductQuality> list = getLastWeekData();
         LocalDate todaySeoul = LocalDate.now(SEOUL_ZONE);
+
+        if (list.isEmpty()) {
+            throw new DashboardException("최근 7일간 불량률 데이터를 집계할 수 없습니다.");
+        }
 
         Map<String, int[]> map = new TreeMap<>();
         for (ProductQuality pq : list) {

@@ -2,6 +2,7 @@ package com.backend.core.config.exception;
 
 import com.backend.auth.exception.UnauthorizedException;
 import com.backend.core.presentation.ErrorResponse;
+import com.backend.dashboard.exception.DashboardException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
@@ -39,6 +40,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ErrorResponse.of(500, "INTERNAL_ERROR", "예상치 못한 오류가 발생했습니다."));
+    }
+
+    @ExceptionHandler(DashboardException.class)
+    public ResponseEntity<ErrorResponse> handleDashboard(DashboardException ex) {
+        log.warn("대시보드 오류: {}", ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST) // 필요에 따라 404, 422 등으로 조정 가능
+                .body(ErrorResponse.of(400, "DASHBOARD_ERROR", ex.getMessage()));
     }
 }
 
