@@ -19,6 +19,23 @@ import java.util.*;
 public class DashboardService {
     private final ProductQualityRepository productQualityRepository;
 
+    private static final ZoneId SEOUL_ZONE = ZoneId.of("Asia/Seoul");
+    private static final ZoneId UTC_ZONE = ZoneId.of("UTC");
+    private static final int DAYS_TO_TRACK = 7;
+
+    private List<ProductQuality> getLastWeekData() {
+        LocalDate todaySeoul = LocalDate.now(SEOUL_ZONE);
+        LocalDateTime weekAgoSeoul = todaySeoul.minusDays(DAYS_TO_TRACK - 1).atStartOfDay();
+        ZonedDateTime weekAgoUTC = weekAgoSeoul.atZone(SEOUL_ZONE).withZoneSameInstant(UTC_ZONE);
+        return productQualityRepository.findByUploadDateAfter(weekAgoUTC.toLocalDateTime());
+    }
+
+    private LocalDate convertToSeoulDate(LocalDateTime utcDateTime) {
+        return utcDateTime.atZone(UTC_ZONE)
+                .withZoneSameInstant(SEOUL_ZONE)
+                .toLocalDate();
+    }
+
     // 요약
     public DashboardSummaryResponse getSummary() {
         long total = productQualityRepository.count();
@@ -27,27 +44,21 @@ public class DashboardService {
         return new DashboardSummaryResponse(total, aCount, bCount);
     }
 
-    // 7일간 일별 등급별 건수
+    // 7일간 등급별 트렌드
     public List<QualityTrendResponse> getQualityTrends() {
-        LocalDate todaySeoul = LocalDate.now(ZoneId.of("Asia/Seoul"));
-        LocalDateTime weekAgoSeoul = todaySeoul.minusDays(6).atStartOfDay();
-        ZonedDateTime weekAgoUTC = weekAgoSeoul.atZone(ZoneId.of("Asia/Seoul")).withZoneSameInstant(ZoneId.of("UTC"));
-
-        List<ProductQuality> list = productQualityRepository.findByUploadDateAfter(weekAgoUTC.toLocalDateTime());
+        List<ProductQuality> list = getLastWeekData();
+        LocalDate todaySeoul = LocalDate.now(SEOUL_ZONE);
 
         Map<String, long[]> map = new TreeMap<>();
         for (ProductQuality pq : list) {
-            LocalDate localDate = pq.getUploadDate()
-                    .atZone(ZoneId.of("UTC"))
-                    .withZoneSameInstant(ZoneId.of("Asia/Seoul"))
-                    .toLocalDate();
+            LocalDate localDate = convertToSeoulDate(pq.getUploadDate());
             String day = localDate.toString();
             map.putIfAbsent(day, new long[2]);
             if ("A".equalsIgnoreCase(pq.getLabel())) map.get(day)[0]++;
             if ("B".equalsIgnoreCase(pq.getLabel())) map.get(day)[1]++;
         }
         List<QualityTrendResponse> result = new ArrayList<>();
-        for (int i = 6; i >= 0; i--) {
+        for (int i = DAYS_TO_TRACK - 1; i >= 0; i--) {
             LocalDate date = todaySeoul.minusDays(i);
             String dateStr = date.toString();
             long[] cnt = map.getOrDefault(dateStr, new long[]{0, 0});
@@ -58,35 +69,25 @@ public class DashboardService {
 
     // 불량률 ("X" 레이블 기준)
     public List<DefectRateResponse> getDefectRates() {
-        LocalDate todaySeoul = LocalDate.now(ZoneId.of("Asia/Seoul"));
-        LocalDateTime weekAgoSeoul = todaySeoul.minusDays(6).atStartOfDay();
-        ZonedDateTime weekAgoUTC = weekAgoSeoul.atZone(ZoneId.of("Asia/Seoul")).withZoneSameInstant(ZoneId.of("UTC"));
-
-        List<ProductQuality> list = productQualityRepository.findByUploadDateAfter(weekAgoUTC.toLocalDateTime());
+        List<ProductQuality> list = getLastWeekData();
+        LocalDate todaySeoul = LocalDate.now(SEOUL_ZONE);
 
         Map<String, int[]> map = new TreeMap<>();
         for (ProductQuality pq : list) {
-            LocalDate localDate = pq.getUploadDate()
-                    .atZone(ZoneId.of("UTC"))
-                    .withZoneSameInstant(ZoneId.of("Asia/Seoul"))
-                    .toLocalDate();
+            LocalDate localDate = convertToSeoulDate(pq.getUploadDate());
             String day = localDate.toString();
             map.putIfAbsent(day, new int[]{0, 0});
-            if ("X".equalsIgnoreCase(pq.getLabel())) {
-                map.get(day)[0]++;
-            }
+            if ("X".equalsIgnoreCase(pq.getLabel())) map.get(day)[0]++;
             map.get(day)[1]++;
         }
-
         List<DefectRateResponse> result = new ArrayList<>();
-        for (int i = 6; i >= 0; i--) {
+        for (int i = DAYS_TO_TRACK - 1; i >= 0; i--) {
             LocalDate date = todaySeoul.minusDays(i);
             String dateStr = date.toString();
             int[] arr = map.getOrDefault(dateStr, new int[]{0, 0});
             double rate = arr[1] == 0 ? 0.0 : ((double) arr[0] / arr[1]) * 100;
             result.add(new DefectRateResponse(dateStr, Math.round(rate * 10.0) / 10.0));
         }
-
         return result;
     }
 }
