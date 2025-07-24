@@ -1,8 +1,17 @@
 package com.backend.dashboard.exception;
 
+import org.springframework.http.HttpStatus;
+
 public class DashboardException extends RuntimeException {
-    public DashboardException(String message) {
+    private final String code;
+    private final HttpStatus status;
+
+    public DashboardException(String code, String message, HttpStatus status) {
         super(message);
+        this.code = code;
+        this.status = status;
     }
-    // 필요하다면 생성자/필드 추가 가능 (예: code, 원인 등)
+
+    public String getCode() { return code; }
+    public HttpStatus getStatus() { return status; }
 }

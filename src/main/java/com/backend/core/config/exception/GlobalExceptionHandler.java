@@ -44,10 +44,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DashboardException.class)
     public ResponseEntity<ErrorResponse> handleDashboard(DashboardException ex) {
-        log.warn("대시보드 오류: {}", ex.getMessage());
+        log.warn("대시보드 오류: {} [{}]", ex.getMessage(), ex.getCode());
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST) // 필요에 따라 404, 422 등으로 조정 가능
-                .body(ErrorResponse.of(400, "DASHBOARD_ERROR", ex.getMessage()));
+                .status(ex.getStatus())
+                .body(ErrorResponse.of(ex.getStatus().value(), ex.getCode(), ex.getMessage()));
     }
+
 }
 

@@ -7,6 +7,7 @@ import com.backend.dashboard.presentation.dto.DashboardSummaryResponse;
 import com.backend.dashboard.presentation.dto.DefectRateResponse;
 import com.backend.dashboard.presentation.dto.QualityTrendResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -14,8 +15,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
-
-// ...생략
 
 @Service
 @RequiredArgsConstructor
@@ -46,7 +45,11 @@ public class DashboardService {
         long bCount = productQualityRepository.countByLabel("B");
 
         if (total == 0) {
-            throw new DashboardException("생산 데이터가 존재하지 않습니다.");
+            throw new DashboardException(
+                    "DASHBOARD_DATA_NOT_FOUND",
+                    "생산 데이터가 존재하지 않습니다.",
+                    HttpStatus.NOT_FOUND
+            );
         }
         return new DashboardSummaryResponse(total, aCount, bCount);
     }
@@ -57,7 +60,11 @@ public class DashboardService {
         LocalDate todaySeoul = LocalDate.now(SEOUL_ZONE);
 
         if (list.isEmpty()) {
-            throw new DashboardException("최근 7일간 품질 데이터가 존재하지 않습니다.");
+            throw new DashboardException(
+                    "DASHBOARD_DATA_NOT_FOUND",
+                    "최근 7일간 품질 데이터가 존재하지 않습니다.",
+                    HttpStatus.NOT_FOUND
+            );
         }
 
         Map<String, long[]> map = new TreeMap<>();
@@ -84,7 +91,11 @@ public class DashboardService {
         LocalDate todaySeoul = LocalDate.now(SEOUL_ZONE);
 
         if (list.isEmpty()) {
-            throw new DashboardException("최근 7일간 불량률 데이터를 집계할 수 없습니다.");
+            throw new DashboardException(
+                    "DASHBOARD_DEFECT_DATA_NOT_FOUND",
+                    "최근 7일간 불량률 데이터를 집계할 수 없습니다.",
+                    HttpStatus.NOT_FOUND
+            );
         }
 
         Map<String, int[]> map = new TreeMap<>();
