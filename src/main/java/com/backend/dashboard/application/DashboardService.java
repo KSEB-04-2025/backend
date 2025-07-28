@@ -1,7 +1,7 @@
 package com.backend.dashboard.application;
 
-import com.backend.dashboard.domain.ProductQuality;
-import com.backend.dashboard.domain.ProductQualityRepository;
+import com.backend.dashboard.domain.ProductQualityDashboard;
+import com.backend.dashboard.domain.ProductQualityDashboardRepository;
 import com.backend.dashboard.exception.DashboardException;
 import com.backend.dashboard.presentation.dto.DashboardSummaryResponse;
 import com.backend.dashboard.presentation.dto.DefectRateResponse;
@@ -19,17 +19,17 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class DashboardService {
-    private final ProductQualityRepository productQualityRepository;
+    private final ProductQualityDashboardRepository productQualityDashboardRepository;
 
     private static final ZoneId SEOUL_ZONE = ZoneId.of("Asia/Seoul");
     private static final ZoneId UTC_ZONE = ZoneId.of("UTC");
     private static final int DAYS_TO_TRACK = 7;
 
-    private List<ProductQuality> getLastWeekData() {
+    private List<ProductQualityDashboard> getLastWeekData() {
         LocalDate todaySeoul = LocalDate.now(SEOUL_ZONE);
         LocalDateTime weekAgoSeoul = todaySeoul.minusDays(DAYS_TO_TRACK - 1).atStartOfDay();
         ZonedDateTime weekAgoUTC = weekAgoSeoul.atZone(SEOUL_ZONE).withZoneSameInstant(UTC_ZONE);
-        return productQualityRepository.findByUploadDateAfter(weekAgoUTC.toLocalDateTime());
+        return productQualityDashboardRepository.findByUploadDateAfter(weekAgoUTC.toLocalDateTime());
     }
 
     private LocalDate convertToSeoulDate(LocalDateTime utcDateTime) {
@@ -40,9 +40,9 @@ public class DashboardService {
 
     // 요약
     public DashboardSummaryResponse getSummary() {
-        long total = productQualityRepository.count();
-        long aCount = productQualityRepository.countByLabel("A");
-        long bCount = productQualityRepository.countByLabel("B");
+        long total = productQualityDashboardRepository.count();
+        long aCount = productQualityDashboardRepository.countByLabel("A");
+        long bCount = productQualityDashboardRepository.countByLabel("B");
 
         if (total == 0) {
             throw new DashboardException(
@@ -56,7 +56,7 @@ public class DashboardService {
 
     // 7일간 등급별 트렌드
     public List<QualityTrendResponse> getQualityTrends() {
-        List<ProductQuality> list = getLastWeekData();
+        List<ProductQualityDashboard> list = getLastWeekData();
         LocalDate todaySeoul = LocalDate.now(SEOUL_ZONE);
 
         if (list.isEmpty()) {
@@ -68,7 +68,7 @@ public class DashboardService {
         }
 
         Map<String, long[]> map = new TreeMap<>();
-        for (ProductQuality pq : list) {
+        for (ProductQualityDashboard pq : list) {
             LocalDate localDate = convertToSeoulDate(pq.getUploadDate());
             String day = localDate.toString();
             map.putIfAbsent(day, new long[2]);
@@ -87,7 +87,7 @@ public class DashboardService {
 
     // 불량률 ("X" 레이블 기준)
     public List<DefectRateResponse> getDefectRates() {
-        List<ProductQuality> list = getLastWeekData();
+        List<ProductQualityDashboard> list = getLastWeekData();
         LocalDate todaySeoul = LocalDate.now(SEOUL_ZONE);
 
         if (list.isEmpty()) {
@@ -99,7 +99,7 @@ public class DashboardService {
         }
 
         Map<String, int[]> map = new TreeMap<>();
-        for (ProductQuality pq : list) {
+        for (ProductQualityDashboard pq : list) {
             LocalDate localDate = convertToSeoulDate(pq.getUploadDate());
             String day = localDate.toString();
             map.putIfAbsent(day, new int[]{0, 0});
