@@ -3,6 +3,7 @@ package com.backend.core.config.exception;
 import com.backend.auth.exception.UnauthorizedException;
 import com.backend.core.presentation.ErrorResponse;
 import com.backend.dashboard.exception.DashboardException;
+import com.backend.product.exception.ProductQualityException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
@@ -49,6 +50,15 @@ public class GlobalExceptionHandler {
                 .status(ex.getStatus())
                 .body(ErrorResponse.of(ex.getStatus().value(), ex.getCode(), ex.getMessage()));
     }
+
+    @ExceptionHandler(ProductQualityException.class)
+    public ResponseEntity<ErrorResponse> handleProductQuality(ProductQualityException ex) {
+        log.warn("제품 품질 오류: {} [{}]", ex.getMessage(), ex.getCode());
+        return ResponseEntity
+                .status(ex.getStatus())
+                .body(ErrorResponse.of(ex.getStatus().value(), ex.getCode(), ex.getMessage()));
+    }
+
 
 }
 

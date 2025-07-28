@@ -2,8 +2,10 @@ package com.backend.product.application;
 
 import com.backend.product.domain.ProductQualityDetail;
 import com.backend.product.domain.ProductQualityDetailRepository;
+import com.backend.product.exception.ProductQualityException;
 import com.backend.product.presentation.dto.ProductQualityResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,7 +16,9 @@ public class ProductQualityService {
 
     public ProductQualityResponse getById(String id) {
         ProductQualityDetail pq = repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 제품 품질 정보가 존재하지 않습니다."));
+                .orElseThrow(() ->
+                        new ProductQualityException("P001", "해당 제품 품질 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND)
+                );
 
         return ProductQualityResponse.builder()
                 .productId(pq.getId())
