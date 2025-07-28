@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Document(collection = "results")
-public class ProductQuality {
+public class ProductQualityDashboard {
     @Id
     private String id;
 
@@ -37,5 +37,8 @@ public class ProductQuality {
     private int nClusters;
 
     @Field("uploadDate")
-    private LocalDateTime uploadDate;    // 판별 일시
+    private LocalDateTime uploadDate;
+
+    @Field("img_url")
+    private String imageUrl;
 }
