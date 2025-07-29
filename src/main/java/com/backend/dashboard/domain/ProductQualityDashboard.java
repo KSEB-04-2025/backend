@@ -41,4 +41,7 @@ public class ProductQualityDashboard {
 
     @Field("img_url")
     private String imageUrl;
+
+    @Field("img_file_id") // mongo
+    private String imgFileId;
 }
