@@ -28,7 +28,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
       MONGO_DB_NAME: ${MONGO_DB_NAME}
     volumes:
-      - /home/zezeonekesb/service-account.json:/app/service-account.json
+      - ${GCS_SERVICE_ACCOUNT_PATH}:/app/service-account.json
     networks:
       - app-network
 
