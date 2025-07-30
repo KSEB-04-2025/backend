@@ -9,6 +9,6 @@ import java.time.LocalDateTime;
 @Builder
 public class ProductStatisticsResponse {
     private String date;   // yyyy-MM-dd
-    private int acount;
-    private int bcount;
+    private int aCount;
+    private int bCount;
 }

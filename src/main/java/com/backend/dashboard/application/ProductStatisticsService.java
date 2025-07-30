@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -20,43 +21,38 @@ public class ProductStatisticsService {
 
     private final ProductQualityDashboardRepository repository;
 
-    // 최근 1달간 7일 단위 주별 통계 리스트
+    // 최근 1달(28일)간 7일 단위 주별 통계 리스트
     public List<ProductStatisticsResponse> getWeeklyStatisticsByMonth() {
         LocalDate today = LocalDate.now();
-        LocalDate startDate = today.minusDays(27); // 오늘 포함 4주 (28일)
+        LocalDate startDate = today.minusDays(27); // 4주(28일), 오늘 포함
         LocalDateTime startDateTime = startDate.atStartOfDay();
         LocalDateTime endDateTime = today.atTime(LocalTime.MAX);
 
         List<ProductQualityDashboard> data = repository.findAllByUploadDateBetween(startDateTime, endDateTime);
 
-        // 주 단위로 그룹핑
-        Map<LocalDate, List<ProductQualityDashboard>> weekGrouped = new LinkedHashMap<>();
-        for (int i = 0; i < 4; i++) {
-            LocalDate weekStart = startDate.plusDays(i * 7);
-            LocalDate weekEnd = weekStart.plusDays(6);
-            List<ProductQualityDashboard> weekData = data.stream()
-                    .filter(e -> {
-                        LocalDate d = e.getUploadDate().toLocalDate();
-                        return (!d.isBefore(weekStart)) && (!d.isAfter(weekEnd));
-                    })
-                    .collect(Collectors.toList());
-            weekGrouped.put(weekStart, weekData);
-        }
+        // 주 단위로 그룹핑 (성능 개선)
+        Map<LocalDate, List<ProductQualityDashboard>> weekGrouped = data.stream()
+                .collect(Collectors.groupingBy(e -> {
+                    LocalDate uploadDate = e.getUploadDate().toLocalDate();
+                    long daysBetween = ChronoUnit.DAYS.between(startDate, uploadDate);
+                    int weekIndex = (int) (daysBetween / 7);
+                    return startDate.plusDays(weekIndex * 7L);
+                }));
 
-        // 각 주별로 합계 집계
+        // 각 주별 통계 (0 데이터도 포함)
         List<ProductStatisticsResponse> result = new ArrayList<>();
-        for (Map.Entry<LocalDate, List<ProductQualityDashboard>> entry : weekGrouped.entrySet()) {
-            int aCount = (int) entry.getValue().stream().filter(e -> "A".equalsIgnoreCase(e.getLabel())).count();
-            int bCount = (int) entry.getValue().stream().filter(e -> "B".equalsIgnoreCase(e.getLabel())).count();
+        for (int i = 0; i < 4; i++) {
+            LocalDate weekStart = startDate.plusDays(i * 7L);
+            List<ProductQualityDashboard> weekData = weekGrouped.getOrDefault(weekStart, Collections.emptyList());
+            Map<String, Long> counts = countByLabel(weekData);
             result.add(ProductStatisticsResponse.builder()
-                    .date(entry.getKey().toString()) // 주 시작일(예: "2025-07-01")
-                    .acount(aCount)
-                    .bcount(bCount)
+                    .date(weekStart.toString())
+                    .aCount(counts.get("A").intValue())
+                    .bCount(counts.get("B").intValue())
                     .build());
         }
 
-        // 데이터가 모두 0인 경우 예외 처리 (예: 모든 주가 acount, bcount 모두 0)
-        boolean allZero = result.stream().allMatch(r -> r.getAcount() == 0 && r.getBcount() == 0);
+        boolean allZero = result.stream().allMatch(r -> r.getACount() == 0 && r.getBCount() == 0);
         if (allZero) {
             throw new ProductStatisticsException("NO_WEEKLY_DATA", "최근 한 달(4주) 동안의 통계 데이터가 없습니다.", HttpStatus.NOT_FOUND);
         }
@@ -74,7 +70,7 @@ public class ProductStatisticsService {
 
         List<ProductQualityDashboard> data = repository.findAllByUploadDateBetween(startDateTime, endDateTime);
 
-        // 월 단위로 그룹핑
+        // 월 단위 그룹핑
         Map<String, List<ProductQualityDashboard>> monthGrouped = data.stream()
                 .collect(Collectors.groupingBy(e -> {
                     LocalDate d = e.getUploadDate().toLocalDate();
@@ -87,16 +83,15 @@ public class ProductStatisticsService {
             LocalDate m = today.minusMonths(2 - i);
             String key = String.format("%d-%02d", m.getYear(), m.getMonthValue());
             List<ProductQualityDashboard> monthData = monthGrouped.getOrDefault(key, Collections.emptyList());
-            int aCount = (int) monthData.stream().filter(e -> "A".equalsIgnoreCase(e.getLabel())).count();
-            int bCount = (int) monthData.stream().filter(e -> "B".equalsIgnoreCase(e.getLabel())).count();
+            Map<String, Long> counts = countByLabel(monthData);
             result.add(ProductStatisticsResponse.builder()
-                    .date(key) // "2025-07"
-                    .acount(aCount)
-                    .bcount(bCount)
+                    .date(key)
+                    .aCount(counts.get("A").intValue())
+                    .bCount(counts.get("B").intValue())
                     .build());
         }
 
-        boolean allZero = result.stream().allMatch(r -> r.getAcount() == 0 && r.getBcount() == 0);
+        boolean allZero = result.stream().allMatch(r -> r.getACount() == 0 && r.getBCount() == 0);
         if (allZero) {
             throw new ProductStatisticsException("NO_MONTHLY_DATA", "최근 3개월 동안의 통계 데이터가 없습니다.", HttpStatus.NOT_FOUND);
         }
@@ -104,24 +99,35 @@ public class ProductStatisticsService {
         return result;
     }
 
-    // 일별(오늘만)
+    // 오늘 하루(일별)
     public List<ProductStatisticsResponse> getDailyStatistics() {
         LocalDate today = LocalDate.now();
         LocalDateTime start = today.atStartOfDay();
         LocalDateTime end = today.atTime(LocalTime.MAX);
 
         List<ProductQualityDashboard> dailyList = repository.findAllByUploadDateBetween(start, end);
-        int aCount = (int) dailyList.stream().filter(e -> "A".equalsIgnoreCase(e.getLabel())).count();
-        int bCount = (int) dailyList.stream().filter(e -> "B".equalsIgnoreCase(e.getLabel())).count();
+        Map<String, Long> counts = countByLabel(dailyList);
 
-        if (aCount == 0 && bCount == 0) {
+        if (counts.get("A") == 0 && counts.get("B") == 0) {
             throw new ProductStatisticsException("NO_DAILY_DATA", "오늘의 통계 데이터가 없습니다.", HttpStatus.NOT_FOUND);
         }
 
         return List.of(ProductStatisticsResponse.builder()
                 .date(today.toString())
-                .acount(aCount)
-                .bcount(bCount)
+                .aCount(counts.get("A").intValue())
+                .bCount(counts.get("B").intValue())
                 .build());
+    }
+
+    // 공통: 라벨별 카운트
+    private Map<String, Long> countByLabel(List<ProductQualityDashboard> data) {
+        Map<String, Long> counts = data.stream()
+                .collect(Collectors.groupingBy(
+                        e -> e.getLabel().toUpperCase(),
+                        Collectors.counting()
+                ));
+        counts.putIfAbsent("A", 0L);
+        counts.putIfAbsent("B", 0L);
+        return counts;
     }
 }
