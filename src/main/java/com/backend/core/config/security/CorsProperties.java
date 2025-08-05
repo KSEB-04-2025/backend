@@ -2,19 +2,20 @@ package com.backend.core.config.security;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;
 
-@ConfigurationProperties(prefix = "cors.allowed")
 @Getter
-@RequiredArgsConstructor
+@Setter
+@ConfigurationProperties(prefix = "cors.allowed")
 public class CorsProperties {
-    private final List<String> paths;
-    private final List<String> origins;
-    private final List<String> methods;
-    private final List<String> headers;
-    private final List<String> exposedHeaders;
-    private final Long maxAge;
-    private final Boolean credentials;
+    private List<String> paths;
+    private List<String> origins;
+    private List<String> methods;
+    private List<String> headers;
+    private List<String> exposedHeaders;
+    private Long maxAge;
+    private Boolean credentials;
 }
