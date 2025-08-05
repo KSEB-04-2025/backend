@@ -41,6 +41,10 @@ public class ProductQualityService {
                 .label(pq.getLabel())
                 .qualityGrade(convertToGrade(pq.getLabel()))
                 .uploadDate(pq.getUploadDate())
+                .uniformity(pq.getUniformity() == 0.0 ? null : pq.getUniformity())
+                .nSpots(pq.getNSpots() == 0 ? null : pq.getNSpots())
+                .nClusters(pq.getNClusters() == 0 ? null : pq.getNClusters())
+                .maxCluster(pq.getMaxCluster() == 0 ? null : pq.getMaxCluster())
                 .build();
     }
 

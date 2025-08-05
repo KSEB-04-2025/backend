@@ -67,20 +67,23 @@ public class DashboardService {
             );
         }
 
+        // 날짜별 [A, B, 전체] 카운트 저장
         Map<String, long[]> map = new TreeMap<>();
         for (ProductQualityDashboard pq : list) {
             LocalDate localDate = convertToSeoulDate(pq.getUploadDate());
             String day = localDate.toString();
-            map.putIfAbsent(day, new long[2]);
+            map.putIfAbsent(day, new long[3]); // [A, B, total]
             if ("A".equalsIgnoreCase(pq.getLabel())) map.get(day)[0]++;
             if ("B".equalsIgnoreCase(pq.getLabel())) map.get(day)[1]++;
+            map.get(day)[2]++; // 전체 개수 증가
         }
+
         List<QualityTrendResponse> result = new ArrayList<>();
         for (int i = DAYS_TO_TRACK - 1; i >= 0; i--) {
             LocalDate date = todaySeoul.minusDays(i);
             String dateStr = date.toString();
-            long[] cnt = map.getOrDefault(dateStr, new long[]{0, 0});
-            result.add(new QualityTrendResponse(dateStr, cnt[0], cnt[1]));
+            long[] cnt = map.getOrDefault(dateStr, new long[]{0, 0, 0});
+            result.add(new QualityTrendResponse(dateStr, cnt[0], cnt[1], cnt[2]));
         }
         return result;
     }
