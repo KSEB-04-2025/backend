@@ -13,6 +13,7 @@ public class SwaggerConfig {
     public OpenAPI openAPI() {
         return new OpenAPI()
                 .addServersItem(new Server().url("https://zezeone-sf.site"))
+                .addServersItem(new Server().url("http://localhost:8080").description("로컬 개발 서버"))
                 .info(new Info()
                         .title("프로젝트 API 명세서")
                         .description("AI 기반 품질 분류 시스템 API 문서입니다.")

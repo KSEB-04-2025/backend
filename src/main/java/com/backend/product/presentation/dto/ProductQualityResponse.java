@@ -15,5 +15,9 @@ public class ProductQualityResponse {
     private String imageUrl;
     private String label;          // A / B
     private String qualityGrade;   // 고수율 / 저수율
-    private LocalDateTime uploadDate; // 통일된 필드명
+    private LocalDateTime uploadDate;
+    private Double uniformity;
+    private Integer nSpots;
+    private Integer nClusters;
+    private Integer maxCluster;
 }
