@@ -4,6 +4,7 @@ import com.backend.auth.exception.UnauthorizedException;
 import com.backend.core.presentation.ErrorResponse;
 import com.backend.dashboard.exception.DashboardException;
 import com.backend.dashboard.exception.ProductStatisticsException;
+import com.backend.dashboard.exception.UniformityException;
 import com.backend.product.exception.ProductListException;
 import com.backend.product.exception.ProductQualityException;
 import lombok.extern.slf4j.Slf4j;
@@ -74,6 +75,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(ex.getStatus())
                 .body(ErrorResponse.of(ex.getStatus().value(), ex.getCode(), ex.getMessage()));
+    }
+
+    @ExceptionHandler(UniformityException.class)
+    public ResponseEntity<ErrorResponse> handleUniformityException(UniformityException ex) {
+        ErrorResponse error = ErrorResponse.of(
+                ex.getStatus().value(),
+                ex.getCode(),
+                ex.getMessage()
+        );
+        return ResponseEntity.status(ex.getStatus()).body(error);
     }
 
 }
