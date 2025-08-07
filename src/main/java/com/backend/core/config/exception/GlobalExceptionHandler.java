@@ -92,10 +92,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DefectRateException.class)
-    public ResponseEntity<Map<String, Object>> handleDefectRateException(DefectRateException ex) {
-        Map<String, Object> error = new HashMap<>();
-        error.put("code", ex.getCode());
-        error.put("message", ex.getMessage());
+    public ResponseEntity<ErrorResponse> handleDefectRateException(DefectRateException ex) {
+        ErrorResponse error = ErrorResponse.of(
+                ex.getStatus().value(),
+                ex.getCode(),
+                ex.getMessage()
+        );
         return ResponseEntity.status(ex.getStatus()).body(error);
     }
 
