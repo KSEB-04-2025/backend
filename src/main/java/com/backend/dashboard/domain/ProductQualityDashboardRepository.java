@@ -11,4 +11,5 @@ public interface ProductQualityDashboardRepository extends MongoRepository<Produ
     List<ProductQualityDashboard> findByUploadDateAfter(LocalDateTime date);
     List<ProductQualityDashboard> findAllByUploadDateBetween(LocalDateTime start, LocalDateTime end);
     List<ProductQualityDashboard> findByLabelNot(String label);
+    long countByLabelAndUploadDateBetween(String label, LocalDateTime start, LocalDateTime end);
 }

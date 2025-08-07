@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class ProductQualityResponse {
-
     private String productId;
     private String imageUrl;
     private String label;          // A / B

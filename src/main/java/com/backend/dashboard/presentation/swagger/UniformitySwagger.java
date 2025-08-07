@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
-@Tag(name = "대시보드", description = "제품별 균일도/클러스터/등급 목록 반환 API")
+@Tag(name = "대시보드")
 @RequestMapping("/api/admin/dashboard/uniformity")
 public interface UniformitySwagger {
 

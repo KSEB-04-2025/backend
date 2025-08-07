@@ -3,6 +3,7 @@ package com.backend.core.config.exception;
 import com.backend.auth.exception.UnauthorizedException;
 import com.backend.core.presentation.ErrorResponse;
 import com.backend.dashboard.exception.DashboardException;
+import com.backend.dashboard.exception.DefectRateException;
 import com.backend.dashboard.exception.ProductStatisticsException;
 import com.backend.dashboard.exception.UniformityException;
 import com.backend.product.exception.ProductListException;
@@ -11,6 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @RestControllerAdvice
@@ -84,6 +88,14 @@ public class GlobalExceptionHandler {
                 ex.getCode(),
                 ex.getMessage()
         );
+        return ResponseEntity.status(ex.getStatus()).body(error);
+    }
+
+    @ExceptionHandler(DefectRateException.class)
+    public ResponseEntity<Map<String, Object>> handleDefectRateException(DefectRateException ex) {
+        Map<String, Object> error = new HashMap<>();
+        error.put("code", ex.getCode());
+        error.put("message", ex.getMessage());
         return ResponseEntity.status(ex.getStatus()).body(error);
     }
 
