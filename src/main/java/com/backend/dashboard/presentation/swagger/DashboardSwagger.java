@@ -21,8 +21,4 @@ public interface DashboardSwagger {
     @Operation(summary = "일별 품질 추이", description = "최근 7일간 등급별(고수율/저수율) 판별 추이")
     @GetMapping("/trend")
     ResponseEntity<List<QualityTrendResponse>> getQualityTrends();
-
-    @Operation(summary = "불량률 추이", description = "최근 7일간 불량률(%) 추이")
-    @GetMapping("/defect-rate")
-    ResponseEntity<List<DefectRateResponse>> getDefectRates();
 }

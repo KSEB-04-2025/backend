@@ -25,8 +25,4 @@ public class DashboardController implements DashboardSwagger {
         return ResponseEntity.ok(dashboardService.getQualityTrends());
     }
 
-    @Override
-    public ResponseEntity<List<DefectRateResponse>> getDefectRates() {
-        return ResponseEntity.ok(dashboardService.getDefectRates());
-    }
 }

@@ -4,7 +4,6 @@ import com.backend.dashboard.domain.ProductQualityDashboard;
 import com.backend.dashboard.domain.ProductQualityDashboardRepository;
 import com.backend.dashboard.exception.DashboardException;
 import com.backend.dashboard.presentation.dto.DashboardSummaryResponse;
-import com.backend.dashboard.presentation.dto.DefectRateResponse;
 import com.backend.dashboard.presentation.dto.QualityTrendResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -84,38 +83,6 @@ public class DashboardService {
             String dateStr = date.toString();
             long[] cnt = map.getOrDefault(dateStr, new long[]{0, 0, 0});
             result.add(new QualityTrendResponse(dateStr, cnt[0], cnt[1], cnt[2]));
-        }
-        return result;
-    }
-
-    // 불량률 ("X" 레이블 기준)
-    public List<DefectRateResponse> getDefectRates() {
-        List<ProductQualityDashboard> list = getLastWeekData();
-        LocalDate todaySeoul = LocalDate.now(SEOUL_ZONE);
-
-        if (list.isEmpty()) {
-            throw new DashboardException(
-                    "DASHBOARD_DEFECT_DATA_NOT_FOUND",
-                    "최근 7일간 불량률 데이터를 집계할 수 없습니다.",
-                    HttpStatus.NOT_FOUND
-            );
-        }
-
-        Map<String, int[]> map = new TreeMap<>();
-        for (ProductQualityDashboard pq : list) {
-            LocalDate localDate = convertToSeoulDate(pq.getUploadDate());
-            String day = localDate.toString();
-            map.putIfAbsent(day, new int[]{0, 0});
-            if ("X".equalsIgnoreCase(pq.getLabel())) map.get(day)[0]++;
-            map.get(day)[1]++;
-        }
-        List<DefectRateResponse> result = new ArrayList<>();
-        for (int i = DAYS_TO_TRACK - 1; i >= 0; i--) {
-            LocalDate date = todaySeoul.minusDays(i);
-            String dateStr = date.toString();
-            int[] arr = map.getOrDefault(dateStr, new int[]{0, 0});
-            double rate = arr[1] == 0 ? 0.0 : ((double) arr[0] / arr[1]) * 100;
-            result.add(new DefectRateResponse(dateStr, Math.round(rate * 10.0) / 10.0));
         }
         return result;
     }
