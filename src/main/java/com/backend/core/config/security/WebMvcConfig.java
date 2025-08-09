@@ -17,13 +17,17 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins(
+                .allowedOriginPatterns(
+                        "http://localhost:3000",
+                        "http://localhost:5173",
                         "https://zezeone-sf.site",
                         "https://api.zezeone-sf.site"
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowedHeaders("*")
-                .allowCredentials(true);
+                .allowedHeaders("Content-Type", "Authorization", "X-Requested-With", "Cookie")
+                .exposedHeaders("Set-Cookie")
+                .allowCredentials(true)
+                .maxAge(3600);
     }
 
 }
