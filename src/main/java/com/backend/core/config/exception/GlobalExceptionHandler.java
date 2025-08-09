@@ -8,13 +8,11 @@ import com.backend.dashboard.exception.ProductStatisticsException;
 import com.backend.dashboard.exception.UniformityException;
 import com.backend.product.exception.ProductListException;
 import com.backend.product.exception.ProductQualityException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @RestControllerAdvice
@@ -42,12 +40,23 @@ public class GlobalExceptionHandler {
 
     // 예상 못 한 에러
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(Exception ex) {
-        log.error("알 수 없는 오류", ex);
+    public ResponseEntity<ErrorResponse> handleException(HttpServletRequest request, Exception ex) {
+        // 요청 정보 로깅
+        log.error("[500 ERROR] 요청 URL: {} {}, Content-Type: {}, RemoteAddr: {}",
+                request.getMethod(),
+                request.getRequestURI(),
+                request.getContentType(),
+                request.getRemoteAddr()
+        );
+
+        // 예외 전체 스택 출력
+        log.error("예상치 못한 오류 발생", ex);
+
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ErrorResponse.of(500, "INTERNAL_ERROR", "예상치 못한 오류가 발생했습니다."));
     }
+
 
     @ExceptionHandler(DashboardException.class)
     public ResponseEntity<ErrorResponse> handleDashboard(DashboardException ex) {

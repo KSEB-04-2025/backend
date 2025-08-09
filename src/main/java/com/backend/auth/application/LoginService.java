@@ -1,27 +1,23 @@
 package com.backend.auth.application;
 
 import com.backend.auth.domain.AdminRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.backend.auth.exception.UnauthorizedException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class LoginService {
     private final AdminRepository adminRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public LoginService(AdminRepository adminRepository, PasswordEncoder passwordEncoder) {
-        this.adminRepository = adminRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
+    public void authenticate(String username, String password) {
+        var admin = adminRepository.findByUsername(username)
+                .orElseThrow(() -> new UnauthorizedException("ADMIN_NOT_FOUND", "존재하지 않는 관리자입니다."));
 
-    public boolean authenticate(String username, String password) {
-        return adminRepository.findByUsername(username)
-                .map(admin -> passwordEncoder.matches(password, admin.getPassword()))
-                .orElse(false);
+        if (!passwordEncoder.matches(password, admin.getPassword())) {
+            throw new UnauthorizedException("INVALID_PASSWORD", "비밀번호가 올바르지 않습니다.");
+        }
     }
 }
-
-
-

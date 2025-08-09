@@ -1,6 +1,5 @@
 package com.backend.auth.presentation;
 
-
 import com.backend.auth.application.LoginService;
 import com.backend.auth.presentation.dto.LoginRequest;
 import com.backend.auth.presentation.dto.LoginResponse;
@@ -30,24 +29,23 @@ public class LoginController implements LoginSwagger {
             @RequestBody LoginRequest request,
             HttpSession session
     ) {
-        boolean success = loginService.authenticate(request.getUsername(), request.getPassword());
-        if (success) {
-            session.setAttribute("isAdmin", true);
-            session.setAttribute("loginId", request.getUsername());
+        loginService.authenticate(request.getUsername(), request.getPassword());
 
-            Authentication auth = new UsernamePasswordAuthenticationToken(
-                    request.getUsername(),
-                    null,
-                    List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))
-            );
-            SecurityContextHolder.getContext().setAuthentication(auth);
+        session.setAttribute("isAdmin", true);
+        session.setAttribute("loginId", request.getUsername());
 
-            session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
-                    SecurityContextHolder.getContext());
+        Authentication auth = new UsernamePasswordAuthenticationToken(
+                request.getUsername(),
+                null,
+                List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))
+        );
+        SecurityContextHolder.getContext().setAuthentication(auth);
 
+        session.setAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                SecurityContextHolder.getContext()
+        );
 
-            return ResponseEntity.ok(new LoginResponse("로그인 성공"));
-        }
-        return ResponseEntity.status(401).body(new LoginResponse("로그인 실패"));
+        return ResponseEntity.ok(new LoginResponse("로그인 성공"));
     }
 }

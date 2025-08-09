@@ -1,41 +1,41 @@
-version: "3.8"
+  version: "3.8"
 
-services:
-  mongo:
-    image: mongo:6.0
-    container_name: mongo-local
-    restart: always
-    ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-    volumes:
-      - mongo-data:/data/db
-    networks:
-      - app-network
+  services:
+    mongo:
+      image: mongo:6.0
+      container_name: mongo-local
+      restart: always
+      ports:
+        - "27017:27017"
+      environment:
+        MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+        MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      volumes:
+        - mongo-data:/data/db
+      networks:
+        - app-network
 
-  spring-app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: spring-app-local
-    ports:
-      - "8080:8080"
-    depends_on:
-      - mongo
-    env_file:
-      - .env
-    environment:
-      SPRING_PROFILES_ACTIVE: local
-    volumes:
-      - C:/service-account.json:/app/service-account.json
-    networks:
-      - app-network
+    spring-app:
+      build:
+        context: .
+        dockerfile: Dockerfile
+      container_name: spring-app-local
+      ports:
+        - "8080:8080"
+      depends_on:
+        - mongo
+      env_file:
+        - .env
+      environment:
+        SPRING_PROFILES_ACTIVE: local
+      volumes:
+        - C:/service-account.json:/app/service-account.json
+      networks:
+        - app-network
 
-volumes:
-  mongo-data:
+  volumes:
+    mongo-data:
 
-networks:
-  app-network:
-    driver: bridge
+  networks:
+    app-network:
+      driver: bridge
