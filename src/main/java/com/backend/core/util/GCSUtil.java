@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 public class GCSUtil {
 
     private final Storage storage;
-    private final String bucketName = "zezeone_images"; // 실제 버킷명
+    private final String bucketName = "zezeone_image"; // 실제 버킷명
 
     public GCSUtil() {
         // 리소스 누수 방지 및 예외 핸들링 개선
