@@ -36,37 +36,6 @@
 | **빌드 도구** | Gradle | |
 | **CI/CD** | GitHub Actions | |
 
-## 시작하기
-
-### 1. 환경 설정
-
-프로젝트 루트 디렉터리에 `.env` 파일을 생성하고 다음 환경 변수를 설정합니다.
-
-```env
-# MongoDB 연결 설정
-MONGO_INITDB_ROOT_USERNAME=your_mongo_user
-MONGO_INITDB_ROOT_PASSWORD=your_mongo_password
-MONGO_DB_NAME=your_db_name
-GCS_SERVICE_ACCOUNT_PATH=/home/zezeonekesb/service-account.json
-
-### 2. 애플리케이션 빌드
-
-아래 명령어를 실행하여 Spring Boot 애플리케이션을 빌드합니다.
-
-```bash
-./gradlew build
-```
-
-### 3. Docker Compose를 이용한 실행
-
-아래 명령어를 사용하여 Docker 컨테이너를 실행합니다.
-
-```bash
-docker-compose up -d
-```
-
-이 명령은 MongoDB, Spring Boot 애플리케이션, Nginx 컨테이너를 시작합니다.
-
 ## API 엔드포인트
 
 애플리케이션이 실행되면, 아래 URL을 통해 Swagger API 문서를 확인할 수 있습니다.
@@ -86,4 +55,4 @@ docker-compose up -d
 
 1.  애플리케이션의 Docker 이미지를 빌드합니다.
 2.  빌드된 이미지를 **Docker Hub**와 같은 컨테이너 레지스트리에 푸시합니다.
-3.  **Google Cloud Platform (GCP)**과 같은 클라우드 환경의 배포 서버에 접속하여 최신 이미지를 pull 받고, 기존 컨테이너를 중지/제거한 후 새 버전의 컨테이너를 실행하여 자동 배포합니다.
+3.  Google Cloud Platform (GCP)과 같은 클라우드 환경의 배포 서버에 접속하여 최신 이미지를 pull 받고, 기존 컨테이너를 중지/제거한 후 새 버전의 컨테이너를 실행하여 자동 배포합니다.
