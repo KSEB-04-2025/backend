@@ -1,70 +1,89 @@
-# Backend Project
+# Spring Boot Backend API Server
 
-## 1. 프로젝트 소개
+[![Java](https://img.shields.io/badge/Java-21-red.svg)](https://www.java.com/)
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.4.3-green.svg)](https://spring.io/projects/spring-boot)
+[![MongoDB](https://img.shields.io/badge/MongoDB-6.0-4EA94B.svg)](https://www.mongodb.com/)
+[![Docker](https://img.shields.io/badge/Docker-v3.8-blue.svg)](https://www.docker.com/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-본 프로젝트는 Java 21, Spring Boot 3를 기반으로 구축된 백엔드 서버입니다. 제품 품질 대시보드, 상품 관리, 사용자 인증 등 다양한 기능을 API로 제공합니다. MongoDB를 주 데이터베이스로 사용하며, Docker를 통해 Nginx, Spring Boot 애플리케이션, 데이터베이스를 함께 관리하여 배포 및 운영의 편의성을 높였습니다.
+---
 
-## 2. 주요 기능
+## 프로젝트 개요
 
-- **사용자 인증**: 관리자 계정 로그인 및 세션 관리 기능을 제공합니다.
-- **대시보드**: 제품 품질 현황, 불량률, 균일도 등 다양한 통계 데이터를 조회할 수 있는 API를 제공합니다.
-- **상품 관리**: 상품 목록 및 개별 상품의 품질 정보를 조회하고 관리하는 기능을 제공합니다.
-- **클라우드 연동**: Google Cloud Storage(GCS)와 연동하여 관련 데이터를 처리합니다.
+본 프로젝트는 Java 21과 Spring Boot 3.4.3을 기반으로 구축된 백엔드 API 서버입니다. 사용자 인증, 제품 품질 대시보드, 상품 관리 등 다양한 기능을 API 형태로 제공합니다. MongoDB를 주 데이터베이스로 사용하며, Docker와 Nginx를 활용하여 컨테이너 기반의 효율적인 배포 및 운영 환경을 지원합니다.
 
-## 3. 사용 기술
+## ✨ 주요 기능
 
-- **언어**: `Java 21`
-- **프레임워크**: `Spring Boot 3.4.3`, `Spring Security`
-- **데이터베이스**: `MongoDB`
-- **API 문서**: `SpringDoc (Swagger-UI)`
-- **인프라**: `Docker`, `Nginx`
-- **기타**: `Google Cloud Storage`, `Lombok`
+-   **사용자 인증**: 관리자 계정 로그인 및 세션 관리 기능을 제공합니다.
+-   **대시보드**: 제품 품질 현황, 불량률, 균일도 등 다양한 통계 데이터를 조회할 수 있는 API를 제공합니다.
+-   **상품 관리**: 상품 목록 및 개별 상품의 품질 정보를 조회하고 관리하는 기능을 제공합니다.
+-   **클라우드 연동**: Google Cloud Storage(GCS)와 연동하여 관련 데이터를 처리합니다.
+-   **API 문서**: SpringDoc (Swagger-UI)를 통해 자동으로 생성되는 API 문서를 제공합니다.
+-   **컨테이너 기반 배포**: Docker를 사용하여 애플리케이션을 패키징하고 Docker Compose로 오케스트레이션합니다.
+-   **CI/CD 자동화**: GitHub Actions를 통해 코드 변경 시 자동으로 빌드 및 배포 워크플로우를 수행합니다.
 
-## 4. 시작하기
+## ️ 기술 스택
 
-### 4.1. 사전 요구 사항
+| 구분 | 기술 | 버전/설명 |
+| --- | --- | --- |
+| **언어** | Java | 21 |
+| **웹 프레임워크** | Spring Boot | 3.4.3 |
+| **보안** | Spring Security | |
+| **데이터베이스** | MongoDB | |
+| **클라우드** | Google Cloud Storage (GCS) | |
+| **API 문서** | SpringDoc (Swagger-UI) | |
+| **컨테이너** | Docker | |
+| **빌드 도구** | Gradle | |
+| **CI/CD** | GitHub Actions | |
 
-- [Docker](https://www.docker.com/get-started)
-- [Docker Compose](https://docs.docker.com/compose/install/)
-- Google Cloud Storage 서비스 계정 키 파일
+## 시작하기
 
-### 4.2. 실행 방법
+### 1. 환경 설정
 
-1.  **프로젝트 클론**
-    ```bash
-    git clone https://github.com/your-repository/backend.git
-    cd backend
-    ```
+프로젝트 루트 디렉터리에 `.env` 파일을 생성하고 다음 환경 변수를 설정합니다.
 
-2.  **환경 변수 설정**
-    프로젝트 루트 디렉터리에 `.env` 파일을 생성하고 아래 내용을 채워넣습니다. `docker-compose.yml`에서 이 값을 참조하여 컨테이너 환경 변수를 설정합니다.
+```env
+# MongoDB 연결 설정
+MONGO_INITDB_ROOT_USERNAME=your_mongo_user
+MONGO_INITDB_ROOT_PASSWORD=your_mongo_password
+MONGO_DB_NAME=your_db_name
+GCS_SERVICE_ACCOUNT_PATH=/home/zezeonekesb/service-account.json
 
-    ```env
-    # MongoDB 설정
-    MONGO_INITDB_ROOT_USERNAME=your_mongo_user
-    MONGO_INITDB_ROOT_PASSWORD=your_mongo_password
-    MONGO_DB_NAME=your_db_name
+### 2. 애플리케이션 빌드
 
-    # Google Cloud Storage 서비스 계정 키 경로 (절대 경로 또는 상대 경로)
-    GCS_SERVICE_ACCOUNT_PATH=/path/to/your/service-account.json
-    ```
+아래 명령어를 실행하여 Spring Boot 애플리케이션을 빌드합니다.
 
-3.  **애플리케이션 빌드**
-    아래 명령어를 실행하여 Spring Boot 애플리케이션을 빌드합니다.
-    ```bash
-    ./gradlew build
-    ```
-    > **참고**: Windows에서는 `./gradlew.bat build`를 사용하세요.
+```bash
+./gradlew build
+```
 
-4.  **Docker Compose 실행**
-    아래 명령어를 사용하여 Docker 컨테이너를 실행합니다.
-    ```bash
-    docker-compose up -d
-    ```
-    이제 Nginx가 80번 포트에서 요청을 받아 Spring Boot 애플리케이션으로 전달합니다.
+### 3. Docker Compose를 이용한 실행
 
-## 5. API 문서
+아래 명령어를 사용하여 Docker 컨테이너를 실행합니다.
+
+```bash
+docker-compose up -d
+```
+
+이 명령은 MongoDB, Spring Boot 애플리케이션, Nginx 컨테이너를 시작합니다.
+
+## API 엔드포인트
 
 애플리케이션이 실행되면, 아래 URL을 통해 Swagger API 문서를 확인할 수 있습니다.
 
-- **Swagger UI**: `https://api.zezeone-sf.site/swagger-ui/index.html`
+-   **Swagger UI**: `https://api.zezeone-sf.site/swagger-ui/index.html`
+
+주요 API 카테고리는 다음과 같습니다:
+
+-   **인증 (Authentication)**: 로그인, 로그아웃
+-   **대시보드 (Dashboard)**: 불량률, 제품 통계, 균일도
+-   **상품 (Product)**: 상품 목록, 상품 품질 상세
+-   **유틸리티 (Utilities)**: 일반 유틸리티 기능
+
+## ⚙️ CI/CD
+
+`.github/workflows/cicd.yml` 에 정의된 GitHub Actions 워크플로우는 `main` 브랜치에 코드가 푸시될 때마다 다음 작업을 자동으로 수행합니다.
+
+1.  애플리케이션의 Docker 이미지를 빌드합니다.
+2.  빌드된 이미지를 **Docker Hub**와 같은 컨테이너 레지스트리에 푸시합니다.
+3.  **Google Cloud Platform (GCP)**과 같은 클라우드 환경의 배포 서버에 접속하여 최신 이미지를 pull 받고, 기존 컨테이너를 중지/제거한 후 새 버전의 컨테이너를 실행하여 자동 배포합니다.
