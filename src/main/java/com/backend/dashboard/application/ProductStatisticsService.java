@@ -52,11 +52,6 @@ public class ProductStatisticsService {
                     .build());
         }
 
-        boolean allZero = result.stream().allMatch(r -> r.getACount() == 0 && r.getBCount() == 0);
-        if (allZero) {
-            throw new ProductStatisticsException("NO_WEEKLY_DATA", "최근 한 달(4주) 동안의 통계 데이터가 없습니다.", HttpStatus.NOT_FOUND);
-        }
-
         return result;
     }
 
@@ -91,11 +86,6 @@ public class ProductStatisticsService {
                     .build());
         }
 
-        boolean allZero = result.stream().allMatch(r -> r.getACount() == 0 && r.getBCount() == 0);
-        if (allZero) {
-            throw new ProductStatisticsException("NO_MONTHLY_DATA", "최근 3개월 동안의 통계 데이터가 없습니다.", HttpStatus.NOT_FOUND);
-        }
-
         return result;
     }
 
@@ -107,10 +97,6 @@ public class ProductStatisticsService {
 
         List<ProductQualityDashboard> dailyList = repository.findAllByUploadDateBetween(start, end);
         Map<String, Long> counts = countByLabel(dailyList);
-
-        if (counts.get("A") == 0 && counts.get("B") == 0) {
-            throw new ProductStatisticsException("NO_DAILY_DATA", "오늘의 통계 데이터가 없습니다.", HttpStatus.NOT_FOUND);
-        }
 
         return List.of(ProductStatisticsResponse.builder()
                 .date(today.toString())
